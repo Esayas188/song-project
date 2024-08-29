@@ -152,10 +152,7 @@ router.put("/updatesong/:id", async (req, res) => {
   }
   try {
     const song = await songmodel.findOneAndUpdate({_id:id}, {
-      title,
-      artist,
-      album,
-      genre,
+      ...req.body,
       updatedAt: new Date()
     });
     if (!song) return res.status(404).json({ error: "No such song" });
