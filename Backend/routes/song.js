@@ -125,6 +125,46 @@ router.post("/createsong", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+router.put("/updatesong/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, artist, album, genre } = req.body;
+  let emptyFields = [];
+
+  if (!title) {
+    emptyFields.push("title");
+  }
+  if (!artist) {
+    emptyFields.push("artist");
+  }
+  if (!album) {
+    emptyFields.push("album");
+  }
+  if (!genre) {
+    emptyFields.push("genre");
+  }
+  if (emptyFields.length > 0) {
+    return res
+      .status(400)
+      .json({ error: "Please fill in all the fields", emptyFields });
+  }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({error: 'No such workout'})
+  }
+  try {
+    const song = await songmodel.findOneAndUpdate({_id:id}, {
+      title,
+      artist,
+      album,
+      genre,
+      updatedAt: new Date()
+    });
+    if (!song) return res.status(404).json({ error: "No such song" });
+
+    res.status(200).json(song);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 router.delete("/delete/:id", async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
