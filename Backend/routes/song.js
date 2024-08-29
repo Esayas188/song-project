@@ -1,6 +1,6 @@
 const express = require("express");
 const songmodel = require("../models/models");
-
+const mongoose = require('mongoose');
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -127,29 +127,11 @@ router.post("/createsong", async (req, res) => {
 });
 router.put("/updatesong/:id", async (req, res) => {
   const { id } = req.params;
-  const { title, artist, album, genre } = req.body;
-  let emptyFields = [];
-
-  if (!title) {
-    emptyFields.push("title");
-  }
-  if (!artist) {
-    emptyFields.push("artist");
-  }
-  if (!album) {
-    emptyFields.push("album");
-  }
-  if (!genre) {
-    emptyFields.push("genre");
-  }
-  if (emptyFields.length > 0) {
-    return res
-      .status(400)
-      .json({ error: "Please fill in all the fields", emptyFields });
-  }
+  
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({error: 'No such workout'})
   }
+
   try {
     const song = await songmodel.findOneAndUpdate({_id:id}, {
       ...req.body,
